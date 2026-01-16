@@ -1,0 +1,37 @@
+{% extends "nav_bar.html" %}
+{% load static %}
+{% block title %}Participants List{% endblock title %} 
+{% block eventlist %}
+
+<div>
+    <h1 class="text-2xl font-bold text-center mb-6">Event Categories</h1>
+    <div class="grid grid-cols-4 gap-4 font-semibold py-2">
+
+       {% for category in categories %}
+           <a href="{% url 'categories' %}?type={{ category.name }}">
+               <div class="flex justify-between p-5 border border-red-500 rounded-lg bg-orange-300 shadow-xl hover:bg-orange-400 transition">
+                   <span class="text-2xl">{{ category.name }}</span>
+                   <span class="text-2xl">{{ category.events.count }}</span>
+               </div>
+           </a>
+       {% endfor %}
+
+    </div>
+
+    {% if events %}
+        <h2 class="text-xl font-bold mt-6">Events in {{ selected_type }}</h2>
+        <div class="grid grid-cols-3 gap-6 mt-4">
+            {% for event in events %}
+                <div class="bg-orange-50 p-4 rounded shadow">
+                    <h3 class="font-semibold text-lg">{{ event.name }}</h3>
+                    <p class="text-gray-500">{{ event.category }}</p>
+                    <p>{{ event.description }}</p>
+                    <p class="text-sm text-gray-400">{{ event.date }} | {{ event.time }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div>
+    
+{% endblock eventlist %}

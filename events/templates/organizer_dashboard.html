@@ -1,0 +1,43 @@
+{% extends 'nav_bar.html' %}
+{% block eventlist%}
+
+    <!-- Stats Grid -->
+    <div class="flex gap-4 mx-auto mb-6 mt-5 justify-around">
+        <a href="{% url 'organizer-dashboard' %}?filter=participants" class="bg-orange-200 p-4 rounded px-24 py-5 shadow text-center hover:bg-orange-500">
+            <h2 class="text-xl font-bold">{{ total_participants }}</h2>
+            <p>Total Participants</p>
+        </a>
+        <a href="{% url 'organizer-dashboard' %}?filter=total" class="bg-orange-200 p-4 rounded px-24 py-5 shadow text-center hover:bg-orange-500">
+            <h2 class="text-xl font-bold">{{ total_events }}</h2>
+            <p>Total Events</p>
+        </a>
+        <a href="{% url 'organizer-dashboard' %}?filter=upcoming" class="bg-orange-200 p-4 rounded px-24 py-5 shadow text-center hover:bg-orange-500">
+            <h2 class="text-xl font-bold">{{ upcoming_events_count }}</h2>
+            <p>Upcoming Events</p>
+        </a>
+        <a href="{% url 'organizer-dashboard' %}?filter=past" class="bg-orange-200 p-4 rounded px-24 py-5 shadow text-center hover:bg-orange-500">
+            <h2 class="text-xl font-bold">{{ past_events_count }}</h2>
+            <p>Past Events</p>
+        </a>
+    </div>
+
+    <!-- Event Listing -->
+    <div class="bg-white p-4 rounded shadow">
+        <h3 class="text-lg font-bold mb-4">
+            {% if filter_type == 'upcoming' %}Upcoming Events{% elif filter_type == 'past' %}Past Events{% else %}Today's Events{% endif %}
+        </h3>
+        <ul>
+            {% for event in events %}
+                <li class="border-b py-2">
+                    {{ event.name }} - {{ event.date }} at {{ event.time }}
+                </li>
+            {% empty %}
+                <li>No events found.</li>
+            {% endfor %}
+        </ul>
+    </div>
+ 
+{% endblock eventlist %}
+
+
+
