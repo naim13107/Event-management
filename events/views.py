@@ -128,8 +128,12 @@ def organizer_dashboard(request):
         events = Event.objects.filter(date__gte=today).order_by('date', 'time')
     elif filter_type == 'past':
         events = Event.objects.filter(date__lt=today).order_by('-date', '-time')
-    else:  
+    elif filter_type == 'today':  
         events = Event.objects.filter(date=today).order_by('time')
+    elif filter_type == 'participants':  
+        events = Event.objects.filter(date=today).order_by('time')
+    else :
+        events=Event.objects.all()
 
   
     context = {

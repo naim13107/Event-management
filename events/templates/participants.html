@@ -8,11 +8,11 @@
     <div class="grid grid-cols-3 gap-4 font-semibold border-b border-b-black  py-2">
     <span>Participant Name</span>
     <span>Participant Email</span>
-    <span>Event(s)</span>
+    <span>Event's</span>
     </div>
 
     {% for participant in participants %}
-    <div class="grid grid-cols-3 gap-4 border-b border-b-black py-2">
+    <div class="grid grid-cols-3 gap-2 md:gap-4 border-b border-b-black py-2">
         <span>{{ participant.name }}</span>
         <span>{{ participant.email }}</span>
         <span>

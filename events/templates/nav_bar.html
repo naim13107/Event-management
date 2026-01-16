@@ -10,14 +10,14 @@
 <body class="bg-orange-50 font-sans">
 
 <!-- Navigation -->
-<nav class="bg-orange-800 text-white p-4">
-  <div class="container mx-auto flex justify-between items-center">
+<nav class="bg-orange-800 text-white md:p-4">
+  <div class=" flex mx-auto justify-between px-10 items-center">
     <a href="#" class="font-bold text-xl">Event Management</a>
-    <div class="space-x-4">
-      <a href="{% url 'event-list' %}" class="hover:text-gray-300">Events</a>
-      <a href="{% url 'participants' %}" class="hover:text-gray-300">Participants</a>
-      <a href="{% url 'categories' %}" class="hover:text-gray-300">Categories</a>
-      <a href="{% url 'organizer-dashboard' %}" class="hover:text-gray-300">Dashboard</a>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-2 md:gap-6">
+      <a href="{% url 'event-list' %}" class="font-bold hover:text-gray-300">Events</a>
+      <a href="{% url 'participants' %}" class="font-bold hover:text-gray-300">Participants</a>
+      <a href="{% url 'categories' %}" class="font-bold hover:text-gray-300">Categories</a>
+      <a href="{% url 'organizer-dashboard' %}" class="font-bold hover:text-gray-300">Dashboard</a>
     </div>
   </div>
 </nav>

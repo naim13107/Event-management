@@ -5,7 +5,7 @@
 
 <div>
     <h1 class="text-2xl font-bold text-center mb-6">Event Categories</h1>
-    <div class="grid grid-cols-4 gap-4 font-semibold py-2">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 font-semibold py-2">
 
        {% for category in categories %}
            <a href="{% url 'categories' %}?type={{ category.name }}">
@@ -20,7 +20,7 @@
 
     {% if events %}
         <h2 class="text-xl font-bold mt-6">Events in {{ selected_type }}</h2>
-        <div class="grid grid-cols-3 gap-6 mt-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
             {% for event in events %}
                 <div class="bg-orange-50 p-4 rounded shadow">
                     <h3 class="font-semibold text-lg">{{ event.name }}</h3>
