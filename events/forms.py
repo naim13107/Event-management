@@ -6,7 +6,7 @@ from .models import Event
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ['name', 'description', 'date', 'time', 'location', 'category']
+        fields = ['name', 'description', 'date', 'time', 'location', 'category','image']
 
         widgets = {
             'name': forms.TextInput(attrs={
@@ -31,6 +31,9 @@ class EventForm(forms.ModelForm):
                 'placeholder': 'Event location'
             }),
             'category': forms.Select(attrs={
+                'class': 'border rounded p-2 mt-10 w-full'
+            }),
+            'image': forms.ClearableFileInput(attrs={
                 'class': 'border rounded p-2 mt-10 w-full'
             }),
         }

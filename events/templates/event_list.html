@@ -5,11 +5,9 @@
 
 {% block content %}
   {% if messages %}
-  
   {% for message in messages  %}
     <li class='bg-green-500'>{{message}}</li>
   {% endfor %}
-    
   {% endif %}
 
 <div class="container mx-auto p-4 mb-20">
@@ -37,7 +35,12 @@
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
     {% for event in events %}
     <div class="bg-white border border-gray-100 shadow-md rounded-2xl overflow-hidden hover:shadow-xl transition-shadow duration-300">
-      <img src="{% static event.image_file %}" alt="{{ event.name }}" class="w-full h-48 object-cover">
+      
+      {% if event.image and event.image.url %}
+        <img src="{{ event.image.url }}" alt="{{ event.name }}" class="w-full h-48 object-cover">
+      {% else %}
+         <img src="{% static 'images/default.webp' %}" alt="Default Image" class="w-full h-48 object-cover">
+      {% endif %}
 
       <div class="p-5">
         <div class="flex justify-between items-start mb-2">
@@ -88,7 +91,7 @@
                <form action="{% url 'delete-event' event.id %}" method="POST" class="inline" onsubmit="return confirm('Permanently delete this event?');">
                    {% csrf_token %}
                    <button type="submit" class="p-2 text-red-400 hover:text-red-600 transition">
-                      
+                      Delete
                    </button>
               </form>
           {% endif %}

@@ -19,15 +19,15 @@ class Event(models.Model):
         on_delete=models.CASCADE, 
         related_name='events') 
     participants = models.ManyToManyField(User, related_name='attended_events', blank=True)
-    # image = models.ImageField(upload_to='event_image',)
-    @property
-    def image_file(self):
-        mapping = {
-            "Technology": "images/tech.webp",
-            "Business": "images/business.webp",
-            "Entertainment": "images/party.webp"
-        }
-        return mapping.get(self.category.name, "images/default.webp")
+    image = models.ImageField(upload_to='event_images/',blank=True,null=True,default='event_images/default.webp')
+    # @property
+    # def image_file(self):
+    #     mapping = {
+    #         "Technology": "images/tech.webp",
+    #         "Business": "images/business.webp",
+    #         "Entertainment": "images/party.webp"
+    #     }
+    #     return mapping.get(self.category.name, "images/default.webp")
 
 
     

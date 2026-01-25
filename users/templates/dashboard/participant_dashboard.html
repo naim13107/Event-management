@@ -28,7 +28,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for event in events %}
                 <div class="bg-white border border-gray-100 shadow-md rounded-2xl overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                    <img src="{% static event.image_file %}" alt="{{ event.name }}" class="w-full h-48 object-cover">
+                    {% if event.image and event.image.url %}
+                           <img src="{{ event.image.url }}" alt="{{ event.name }}" class="w-full h-48 object-cover">
+                    {% else %}
+                           <img src="{% static 'images/default.webp' %}" alt="Default Image" class="w-full h-48 object-cover">
+                    {% endif %}
                     
                     <div class="p-6">
                         <div class="flex justify-between items-start mb-2">
