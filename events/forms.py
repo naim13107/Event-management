@@ -1,5 +1,5 @@
 from django import forms
-from .models import Event,Participant
+from .models import Event
 
 
 
@@ -36,33 +36,21 @@ class EventForm(forms.ModelForm):
         }
     
 
-class ParticipantForm(forms.ModelForm):
-    class Meta:
-        model = Participant
-        fields = ['name', 'email','event']  
-        widgets = {
-            'name': forms.TextInput(attrs={
-                'class': 'border rounded p-2 mt-5 w-full',
-                'placeholder': 'Participant name'
-            }),
-            'email': forms.EmailInput(attrs={
-                'class': 'border rounded p-2 mt-5 w-full',
-                'placeholder': 'Participant email'
-            }),
-            'event': forms.SelectMultiple(attrs={  
-                'class': 'border rounded p-2 mt-5 w-full', 
-            }),
-        }
+# class ParticipantForm(forms.ModelForm):
+#     class Meta:
+#         model = Participant
+#         fields = ['name', 'email','event']  
+#         widgets = {
+#             'name': forms.TextInput(attrs={
+#                 'class': 'border rounded p-2 mt-5 w-full',
+#                 'placeholder': 'Participant name'
+#             }),
+#             'email': forms.EmailInput(attrs={
+#                 'class': 'border rounded p-2 mt-5 w-full',
+#                 'placeholder': 'Participant email'
+#             }),
+#             'event': forms.SelectMultiple(attrs={  
+#                 'class': 'border rounded p-2 mt-5 w-full', 
+#             }),
+#         }
 
-
-
-
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self.apply_styled_widgets()
-        
-# class ParticipantsForm (forms.Form):
-#     class Meta : 
-#         model : Participant
-#         field :   
-        

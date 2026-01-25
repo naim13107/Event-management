@@ -1,5 +1,5 @@
-{% extends 'nav_bar.html' %}
-{% block eventlist%}
+{% extends 'base.html' %}
+{% block content%}
 
     <!-- Stats Grid -->
 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mx-auto mb-6 mt-5 px-4">
@@ -39,16 +39,31 @@
         </h3>
         <ul>
             {% for event in events %}
-                <li class="border-b py-2">
-                    {{ event.name }} - {{ event.date }} at {{ event.time }}
-                </li>
-            {% empty %}
-                <li>No events found.</li>
-            {% endfor %}
+                <div class="border p-4 mb-4 rounded bg-white shadow-sm flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold text-lg">{{ event.name }}</h3>
+                        <p class="text-sm text-gray-500">{{ event.date }} at {{ event.time }}</p>
+                    </div>
+    
+                    <div class="flex space-x-2">
+                        <a href="{% url 'update-event' event.id %}" 
+                           class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                           Edit
+                        </a>
+
+                        <form action="{% url 'delete-event' event.id %}" method="POST" onsubmit="return confirm('Delete this event?');">
+                            {% csrf_token %}
+                            <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+           {% endfor %}
         </ul>
     </div>
  
-{% endblock eventlist %}
+{% endblock content %}
 
 
 

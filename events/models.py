@@ -1,4 +1,5 @@
 from django.db import models 
+from django.contrib.auth.models import User
 # Create your models here. 
 class Category(models.Model): 
     name = models.CharField(max_length=100) 
@@ -17,7 +18,8 @@ class Event(models.Model):
         Category, 
         on_delete=models.CASCADE, 
         related_name='events') 
-    
+    participants = models.ManyToManyField(User, related_name='attended_events', blank=True)
+    # image = models.ImageField(upload_to='event_image',)
     @property
     def image_file(self):
         mapping = {
@@ -26,18 +28,20 @@ class Event(models.Model):
             "Entertainment": "images/party.webp"
         }
         return mapping.get(self.category.name, "images/default.webp")
+
+
     
     def __str__(self): 
         return self.name 
 
-class Participant (models.Model):
-    name = models.CharField(max_length=200) 
-    email = models.EmailField() 
-    event = models.ManyToManyField( 
-        Event, 
-        related_name='participants' ) 
+# class Participant (models.Model):
+#     name = models.CharField(max_length=200) 
+#     email = models.EmailField() 
+#     event = models.ManyToManyField( 
+#         Event, 
+#         related_name='participants' ) 
     
-    def __str__(self): 
-        return self.name
+#     def __str__(self): 
+#         return self.name
     
     

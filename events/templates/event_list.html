@@ -1,74 +1,105 @@
-
-{% extends "nav_bar.html" %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block title %}Event-List{% endblock title %}
 
-{% block eventlist %}
+{% block content %}
+  {% if messages %}
+  
+  {% for message in messages  %}
+    <li class='bg-green-500'>{{message}}</li>
+  {% endfor %}
+    
+  {% endif %}
 
 <div class="container mx-auto p-4 mb-20">
   <div class="flex justify-between items-center mb-10">
     <h1 class="text-3xl font-bold">Events</h1>
-    <a href="{% url 'create-event' %}" class="w-40 h-10  bg-green-500 text-m py-2 px-2  rounded-3xl text-white hover:bg-green-600 transition">
+    {% if user.is_superuser or user.groups.all.0.name == 'Organizer' %}
+    <a href="{% url 'create-event' %}" class="w-48 h-10 bg-green-500 text-m py-2 px-4 rounded-3xl text-white hover:bg-green-600 transition flex items-center justify-center">
       + Add a New Event
     </a>
+    {% endif %}
   </div>
 
-  <form method="GET" class="relative mb-6 w-3/5">
+  <form method="GET" class="relative mb-10 w-full md:w-3/5">
        <input type="text"  
               name="q" 
               placeholder="Search by name or location..."
-              class="w-full border rounded-full py-2 px-4
-              focus:outline-none focus:ring-2 focus:ring-blue-500">
+              class="w-full border rounded-full py-3 px-6 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
 
-        <button
-           type="submit"
-           class="absolute right-0 top-1/2 -translate-y-1/2
-            bg-blue-500 text-white px-7 py-2 rounded-full hover:bg-blue-600 transition">
+        <button type="submit"
+           class="absolute right-1 top-1/2 -translate-y-1/2 bg-blue-500 text-white px-8 py-2 rounded-full hover:bg-blue-600 transition">
           Search
         </button>
   </form>
 
- 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-    
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
     {% for event in events %}
+    <div class="bg-white border border-gray-100 shadow-md rounded-2xl overflow-hidden hover:shadow-xl transition-shadow duration-300">
+      <img src="{% static event.image_file %}" alt="{{ event.name }}" class="w-full h-48 object-cover">
 
-    <div class="bg-orange-100 shadow rounded-2xl flex-row justify-around hover:shadow-lg transition">
-      <img src="{% static event.image_file %}"
-           alt=""
-           class="w-full h-48 object-cover rounded-t">
-
-      <div class="p-4">
-        <h2 class="text-xl font-semibold">{{event.name}}</h2>
-        <p class="text-gray-500">{{event.category}}</p>
-        <p class="mt-2 text-gray-700">
-          {{event.description}}
-        </p>
-        <p class="mt-1 text-sm text-gray-400">{{event.date}} | {{event.time}}</p>
-       <p class="mt-1 text-sm font-semibold">Participants</p>
-       <h3 class="mt-1 text-sm font-semibold">Total Participants : {{event.participants.count}}</h3>
-
-
-        <div class="mt-3 space-x-3">
-          <a href="{% url 'event-details' event.id %}" class="bg-blue-500 text-white px-2 py-1 rounded-xl hover:transition shadow-lg">View</a>
-          <a href="{% url 'add-participant' %}" class="bg-emerald-900 text-white px-2 py-1 rounded-xl hover:transition shadow-lg"> Add Participants</a>
-          <a href="{% url 'update-event' event.id %}" class="bg-green-500 text-white px-2 py-1 rounded-xl hover:transition shadow-lg">Edit</a>
-          <form action="{% url 'delete-event' event.id %}" method="POST" class="inline">
-              {% csrf_token %}
-               <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded-xl hover:shadow-lg transition">
-                Delete
-               </button>
-          </form>
+      <div class="p-5">
+        <div class="flex justify-between items-start mb-2">
+            <h2 class="text-xl font-bold text-gray-800">{{ event.name }}</h2>
+            <span class="text-xs font-bold uppercase px-2 py-1 bg-orange-100 text-orange-600 rounded">
+                {{ event.category }}
+            </span>
         </div>
+        
+        <p class="text-gray-600 text-sm line-clamp-2 mb-4">{{ event.description }}</p>
+        
+        <div class="flex items-center text-sm text-gray-400 mb-4">
+            <span class="mr-3">📅 {{ event.date }}</span>
+            <span> {{ event.time }}</span>
+        </div>
+
+        <div class="border-t pt-4 mt-2">
+            <p class="text-sm font-bold text-gray-700">Total Participants: 
+                <span class="text-blue-600">{{ event.participants.count }}</span>
+            </p>
+        </div>
+
+        <div class="mt-5 flex flex-wrap gap-2">
+           <a href="{% url 'event-details' event.id %}" class="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm hover:bg-black transition">
+               View Details
+           </a>
+
+           {% if user.is_authenticated %}
+               <form action="{% url 'rsvp-event' event.id %}" method="POST" class="inline">
+                   {% csrf_token %}
+                   {% if user in event.participants.all %}
+                       <button type="submit" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-600 hover:text-white transition">
+                           Withdraw
+                       </button>
+                   {% else %}
+                       <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-orange-600 transition shadow-md">
+                           RSVP
+                       </button>
+                   {% endif %}
+               </form>
+           {% endif %}
+
+           {% if user.is_superuser or user.groups.all.0.name == 'Organizer' %}
+               <a href="{% url 'update-event' event.id %}" class="bg-green-100 text-green-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-green-600 hover:text-white transition">
+                   Edit
+               </a>
+        
+               <form action="{% url 'delete-event' event.id %}" method="POST" class="inline" onsubmit="return confirm('Permanently delete this event?');">
+                   {% csrf_token %}
+                   <button type="submit" class="p-2 text-red-400 hover:text-red-600 transition">
+                      
+                   </button>
+              </form>
+          {% endif %}
+        </div> 
       </div>
     </div>
-       
+    {% empty %}
+    <div class="col-span-full text-center py-20">
+        <p class="text-gray-400 text-xl italic">No events found matches your search.</p>
+    </div>
     {% endfor %}
-      
-
   </div>
-
 </div>
-{% endblock eventlist %}
+{% endblock content %}

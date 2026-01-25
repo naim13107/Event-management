@@ -18,10 +18,13 @@ from django.contrib import admin
 from django.urls import path,include
 from debug_toolbar.toolbar import debug_toolbar_urls
 from events import views
+from core.views import home
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('events/',include("events.urls")),
-    path('', views.event_list, name='home'), 
+    path('',home , name='home'), 
+    path('users/',include("users.urls")),
+    
 ]+ debug_toolbar_urls()

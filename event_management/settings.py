@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 import dj_database_url
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ldv3hjlw5hc4md3+*1(-8s0=-ly872lg6jk6xi3_v8(rs9cq^r'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -41,6 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'events',
     "debug_toolbar",
+    'users',
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -147,3 +150,17 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS=[
     BASE_DIR/'static'
 ]
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
+
+FRONTEND_URL = 'http://127.0.0.1:8000'
+
+LOGIN_URL = 'sign-in'
