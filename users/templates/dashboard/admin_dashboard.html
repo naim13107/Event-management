@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-
+<ul>
+            {% for message in messages %}
+                <li class="bg-green-500 text-white px-1 py-2">{{message}}</li>
+            {% endfor %}
+</ul>
 <div class="container mx-auto px-4 py-8">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
         <a href="?view=events" class="p-8 border border-orange-800 bg-orange-300 rounded-xl shadow-lg transform transition-all hover:bg-orange-600 hover:-translate-y-3">
