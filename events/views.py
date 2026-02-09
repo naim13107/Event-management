@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from events.forms import EventForm
+from events.forms import EventForm,CreateCategoryForm
 from django.contrib import messages
 from events.models import Event, Category
 from django.db.models import Q, Count
@@ -9,10 +9,13 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.models import User, Group
+from django.utils.decorators import method_decorator
+from django.views.generic import CreateView,DeleteView,TemplateView,UpdateView
+from django.urls import reverse_lazy
 
 
 def is_organizer(user):
-    return user.groups.filter(name='Organizer').exists() or user.is_superuser
+    return user.groups.filter(name='Organizer').exists() or user.is_superuser or user.groups.fiilter(name = 'Admin')
 
 def is_admin(user):
     return user.groups.filter(name='Admin').exists() or user.is_superuser
@@ -33,36 +36,70 @@ def event_details(request, event_id):
     event = get_object_or_404(Event.objects.prefetch_related('participants'), id=event_id)
     return render(request, 'event_details.html', {'event': event})
 
-@user_passes_test(is_organizer)
-def create_event(request):
-    event_form = EventForm()
-    if request.method == 'POST':
-        event_form = EventForm(request.POST,request.FILES)
-        if event_form.is_valid():
-            event_form.save()
-            messages.success(request, 'Event created successfully')
-            return redirect('event-list')
-    return render(request, 'event_form.html', {"event_form": event_form})
+# @user_passes_test(is_organizer)
+# def create_event(request):
+#     event_form = EventForm()
+#     if request.method == 'POST':
+#         event_form = EventForm(request.POST,request.FILES)
+#         if event_form.is_valid():
+#             event_form.save()
+#             messages.success(request, 'Event created successfully')
+#             return redirect('event-list')
+#     return render(request, 'event_form.html', {"event_form": event_form})
 
-@user_passes_test(is_organizer)
-def update_event(request, event_id):
-    event = get_object_or_404(Event, id=event_id)
-    event_form = EventForm(instance=event)
-    if request.method == 'POST':
-        event_form = EventForm(request.POST, request.FILES,instance=event)
-        if event_form.is_valid():
-            event_form.save()
-            messages.success(request, "Event updated successfully")
-            return redirect('event-list')
-    return render(request, 'event_form.html', {'event_form': event_form})
+@method_decorator(user_passes_test(is_organizer),name='dispatch')
+class CreateEvent(CreateView):
+    model = Event
+    form_class = EventForm
+    template_name = 'event_form.html'
+    success_url = reverse_lazy('event-list')
 
-@user_passes_test(is_organizer)
-def delete_event(request, event_id):
-    if request.method == 'POST':
-        event = get_object_or_404(Event, id=event_id)
-        event.delete()
-        messages.success(request, 'Event deleted successfully')
-    return redirect('event-list')
+    def form_valid(self, form):
+        event = form.save()
+        messages.success(self.request,
+            f"Event '{event.name}' has been created successfully")
+        return super().form_valid(form)
+    
+
+# @user_passes_test(is_organizer)
+# def update_event(request, event_id):
+#     event = get_object_or_404(Event, id=event_id)
+#     event_form = EventForm(instance=event)
+#     if request.method == 'POST':
+#         event_form = EventForm(request.POST, request.FILES,instance=event)
+#         if event_form.is_valid():
+#             event_form.save()
+#             messages.success(request, "Event updated successfully")
+#             return redirect('event-list')
+#     return render(request, 'event_form.html', {'event_form': event_form})
+
+@method_decorator(user_passes_test(is_organizer), name='dispatch')
+class UpdateEvent(UpdateView):
+    model = Event
+    form_class = EventForm
+    pk_url_kwarg = 'event_id'
+    template_name = 'event_form.html'
+    success_url = reverse_lazy('event-list')
+
+    def form_valid(self, form):
+        messages.success(self.request, "Event updated successfully")
+        return super().form_valid(form)
+
+
+# @user_passes_test(is_organizer)
+# def delete_event(request, event_id):
+#     if request.method == 'POST':
+#         event = get_object_or_404(Event, id=event_id)
+#         event.delete()
+#         messages.success(request, 'Event deleted successfully')
+#     return redirect('event-list')
+
+@method_decorator(user_passes_test(is_organizer),name='dispatch')
+class DeleteEvent(DeleteView):
+    model = Event
+    pk_url_kwarg = 'event_id'
+    success_url = reverse_lazy('event-list')
+
 
 
 
@@ -84,44 +121,97 @@ def rsvp_event(request, event_id):
 
 
 
-@user_passes_test(is_organizer)
-def organizer_dashboard(request):
-    today = timezone.now().date()  
-    stats = Event.objects.aggregate(
-        total_events=Count('id'),
-        upcoming_events_count=Count('id', filter=Q(date__gte=today)),
-        past_events_count=Count('id', filter=Q(date__lt=today))
-    )
+# @user_passes_test(is_organizer)
+# def organizer_dashboard(request):
+#     today = timezone.now().date()  
+#     stats = Event.objects.aggregate(
+#         total_events=Count('id'),
+#         upcoming_events_count=Count('id', filter=Q(date__gte=today)),
+#         past_events_count=Count('id', filter=Q(date__lt=today))
+#     )
     
-    total_participants = User.objects.exclude(is_superuser=True).count()
+#     total_participants = User.objects.exclude(is_superuser=True).count()
 
-    filter_type = request.GET.get('filter', 'today')
-    if filter_type == 'upcoming':
-        events = Event.objects.filter(date__gte=today).order_by('date')
-    elif filter_type == 'past':
-        events = Event.objects.filter(date__lt=today).order_by('-date')
-    else:
-        events = Event.objects.all()
+#     filter_type = request.GET.get('filter', 'today')
+#     if filter_type == 'upcoming':
+#         events = Event.objects.filter(date__gte=today).order_by('date')
+#     elif filter_type == 'past':
+#         events = Event.objects.filter(date__lt=today).order_by('-date')
+#     else:
+#         events = Event.objects.all()
 
-    context = {
-        **stats,
-        'total_participants': total_participants,
-        'events': events,
-        'filter_type': filter_type
-    }
-    return render(request, 'organizer_dashboard.html', context)
+#     context = {
+#         **stats,
+#         'total_participants': total_participants,
+#         'events': events,
+#         'filter_type': filter_type
+#     }
+#     return render(request, 'organizer_dashboard.html', context)
+
+@method_decorator(user_passes_test(is_organizer), name='dispatch')
+class OrganizerDashboard(TemplateView):
+    template_name = 'organizer_dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        today = timezone.now().date()
+
+        stats = Event.objects.aggregate(
+            total_events=Count('id'),
+            upcoming_events_count=Count('id', filter=Q(date__gte=today)),
+            past_events_count=Count('id', filter=Q(date__lt=today))
+        )
+
+        context.update(stats)
+
+        context['total_participants'] = (
+            User.objects.exclude(is_superuser=True).count()
+        )
+
+        filter_type = self.request.GET.get('filter', 'today')
+        context['filter_type'] = filter_type
+
+        if filter_type == 'upcoming':
+            context['events'] = (
+                Event.objects.filter(date__gte=today).order_by('date')
+            )
+        elif filter_type == 'past':
+            context['events'] = (
+                Event.objects.filter(date__lt=today).order_by('-date')
+            )
+        else:
+            context['events'] = Event.objects.all()
+
+        return context
+    
 
 
-@user_passes_test(is_admin)
-def create_category(request):
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        description = request.POST.get('description')
-        if name:
-            Category.objects.create(name=name, description=description)
-            messages.success(request, f"Category '{name}' created successfully!")
-            return redirect('/users/admin-dashboard/?view=categories')
-    return render(request, 'dashboard/create_category.html')
+
+# @user_passes_test(is_admin)
+# def create_category(request):
+#     category_form = CreateCategoryForm()
+#     if request.method == 'POST':
+#             category_form = CreateCategoryForm(request.POST)
+#             if category_form.is_valid():
+#                 category_form.save()
+#                 messages.success(request, 'Category created successfully')
+#                 return redirect('/users/admin-dashboard/?view=categories')
+#     return render(request,'create_category.html',{'form': category_form})
+
+@method_decorator(user_passes_test(is_admin),name='dispatch')
+class CreateCategory(CreateView):
+    model = Category
+    form_class = CreateCategoryForm
+    success_url = reverse_lazy('categories')
+    template_name = 'create_category.html'
+
+    def form_valid(self, form):
+        category = form.save()
+        messages.success(self.request,f'Category {category.name} is created successfully')
+        return super().form_valid(form)
+    
+
 
 
 @user_passes_test(is_organizer)

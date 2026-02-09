@@ -1,5 +1,5 @@
 from django import forms
-from .models import Event
+from .models import Event,Category
 
 
 
@@ -57,3 +57,17 @@ class EventForm(forms.ModelForm):
 #             }),
 #         }
 
+class CreateCategoryForm(forms.ModelForm):
+    class Meta : 
+        model = Category
+        fields = ['name','description']
+        widgets = {
+            'name' : forms.TextInput(attrs={
+                'class' : 'border rounded p-2 mt-5 w-full',
+                 'placeholder': 'Category name'
+            }),
+            'description' : forms.TextInput(attrs={
+                'class' : 'border rounded p-2 mt-5 w-full',
+                 'placeholder': 'Category description'
+            })
+        }
