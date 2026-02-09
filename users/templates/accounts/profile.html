@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-orange-100 to-orange-200 p-4 md:p-8">
+  <div class="max-w-6xl mx-auto flex flex-col md:flex-row shadow-2xl rounded-3xl overflow-hidden bg-white/90 backdrop-blur-sm">
+    
+    <aside class="w-full md:w-64 bg-white border-r border-orange-100">
+      <div class="p-6">
+        <h2 class="text-2xl font-bold text-orange-600 tracking-tight">Account</h2>
+      </div>
+      <nav class="mt-2 px-4 pb-6 space-y-2">
+        <a href="{% url 'profile' %}" class="flex items-center space-x-3 py-3 px-4 rounded-xl bg-orange-500 text-white font-semibold shadow-md transition-all">
+          <span> Profile</span>
+        </a>
+        <a href="{% url 'edit_profile' %}" class="flex items-center space-x-3 py-3 px-4 rounded-xl text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition-all">
+          <span> Edit Profile</span>
+        </a>
+        <a href="{% url 'password_change' %}" class="flex items-center space-x-3 py-3 px-4 rounded-xl text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition-all">
+          <span> Change Password</span>
+        </a>
+        <hr class="border-orange-50 my-4">
+        <a href="{% url 'event-list' %}" class="flex items-center space-x-3 py-3 px-4 rounded-xl text-gray-600 hover:bg-gray-100 transition-all">
+          <span>Back to Events</span>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="flex-1 p-6 md:p-12">
+      <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-8 mb-10">
+        <div class="relative">
+          <img
+            src="{{ profile_image.url }}"
+            alt="User Avatar"
+            class="w-32 h-32 rounded-full object-cover border-4 border-orange-500 shadow-xl"
+          />
+          <div class="absolute bottom-0 right-0 bg-green-500 w-6 h-6 rounded-full border-4 border-white"></div>
+        </div>
+
+        <div class="text-center sm:text-left">
+          <h1 class="text-4xl font-black text-gray-800">{{ name }}</h1>
+          <p class="text-orange-600 font-bold uppercase tracking-widest text-sm mt-1">
+            {% if user.is_superuser %}
+                Administrator
+            {% elif user.groups.all.0.name == 'Organizer' %}
+                Event Organizer
+            {% else %}
+                Event Enthusiast
+            {% endif %}
+          </p>
+          
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+          <h3 class="text-lg font-bold text-gray-800 mb-4 border-b border-orange-100 pb-2">
+            Personal Information
+          </h3>
+          <div class="space-y-3 text-gray-600">
+            <p><span class="font-semibold text-gray-400 uppercase text-xs block">Email Address</span> {{ email }}</p>
+            <p><span class="font-semibold text-gray-400 uppercase text-xs block">Username</span> {{ username }}</p>
+            <p><span class="font-semibold text-gray-400 uppercase text-xs block">Phone Number : </span> {{ phone_number }}</p>
+
+          </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+          <h3 class="text-lg font-bold text-gray-800 mb-4 border-b border-orange-100 pb-2">
+            Activity
+          </h3>
+          <div class="space-y-3 text-gray-600">
+            <p><span class="font-semibold text-gray-400 uppercase text-xs block">Joined On</span> {{ member_since }}</p>
+            <p><span class="font-semibold text-gray-400 uppercase text-xs block">Last Active</span> {{ last_login }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 bg-orange-50 p-8 rounded-3xl border border-orange-100">
+        <h3 class="text-xl font-bold text-orange-800 mb-4">About Me</h3>
+        <p class="text-orange-900 leading-relaxed italic">
+          "{{ bio|default:'No bio available yet. Tell us something interesting about yourself!' }}"
+        </p>
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock content %}

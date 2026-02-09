@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.urls import path
-from users.views import SignUp,CustomLoginView,AdminDashboard,CreateGroup,DeleteGroup,DeleteCategory,activate_user,participant_dashboard,delete_participant,assign_role
+from users.views import SignUp,CustomLoginView,ChangePassword,AdminDashboard,EditProfileView,CustomPasswordResetConfirmView,CustomPasswordResetView,ProfileView,CreateGroup,DeleteGroup,DeleteCategory,activate_user,participant_dashboard,delete_participant,assign_role
 #sign_up,sign_in,sign_out,admin_dashboard,create_group,delete_group,delete_category
 from django.contrib.auth.views import LogoutView
+from django.contrib.auth.views import PasswordChangeDoneView
 urlpatterns = [
 
     path('admin/', admin.site.urls),
@@ -24,5 +25,11 @@ urlpatterns = [
     #path('admin-dashboard/delete-category/<int:category_id>/',delete_category, name='delete-category'),
     path('admin-dashboard/delete-category/<int:category_id>/',DeleteCategory.as_view(), name='delete-category'),
     path('my-dashboard/',participant_dashboard, name='participant-dashboard'),
+    path('profile/',ProfileView.as_view(),name='profile'),
+    path('edit-profile/',EditProfileView.as_view(),name='edit_profile'),
+    path('password-change/',ChangePassword.as_view(),name = 'password_change'),
+    path('password-change-done/',PasswordChangeDoneView.as_view(template_name = 'accounts/password_change_done.html'),name = 'password_change_done'),
+    path('password-reset/',CustomPasswordResetView.as_view(),name = 'password_reset'),
+    path('password-reset/confirm/<uidb64>/<token>/',CustomPasswordResetConfirmView.as_view(),name = 'password_reset_confirm'),
 ]
     

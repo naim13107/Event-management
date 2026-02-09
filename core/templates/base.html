@@ -7,80 +7,98 @@
     <title>{% block title %}EventMaster{% endblock title %}</title>
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
 </head>
-<body class="bg-orange-200 font-sans flex flex-col min-h-full">
+<body class="bg-orange-50 font-sans flex flex-col min-h-full">
 
-    <nav class="bg-orange-800 shadow-lg">
-        <div class="max-w-7xl mx-auto px-4">
+    <nav class="bg-orange-800 shadow-xl sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
+                
                 <div class="flex items-center">
-                    <span class="text-2xl font-bold text-white">EventMaster</span>
+                    <a href="{% url 'home' %}" class="text-2xl font-black text-white tracking-tighter hover:text-orange-200 transition">
+                        EVENT<span class="text-orange-400">MASTER</span>
+                    </a>
                 </div>
                 
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="{% url 'home' %}" class="text-white hover:text-gray-700 font-medium">Home</a>
-                    <a href="{% url 'event-list' %}" class="text-white hover:text-gray-700 font-medium">Events</a>
+                    <a href="{% url 'home' %}" class="text-white hover:text-orange-200 font-medium transition">Home</a>
+                    <a href="{% url 'event-list' %}" class="text-white hover:text-orange-200 font-medium transition">Events</a>
+                    
                     {% if user.is_authenticated %}
-                  
-    
-                   
+                        <div class="flex items-center space-x-4 border-l border-orange-700 pl-8">
+                            <span class="text-white text-sm font-semibold">
+                                Hi, {{ user.first_name|default:user.username }}
+                            </span>
 
-            {% if user.is_superuser or user.is_staff %}
-                      <a href="{% url 'admin-dashboard' %}" class="text-white hover:text-gray-800 font-medium">Admin Panel</a>
-                      <form method="post" action="{% url 'logout' %}">
-                               {% csrf_token %}
-                          <button type="submit"
-                                  class="text-white hover:text-gray-800 font-medium">
-                          Logout
-                          </button>
-                      </form>
-            {% endif %}
+                            <div class="relative">
+                                <button id="userMenuButton" class="focus:outline-none flex items-center transition-transform hover:scale-105 active:scale-95">
+                                    {% if user.profile_image %}
+                                        <img src="{{ user.profile_image.url }}" 
+                                             alt="Profile" 
+                                             class="w-10 h-10 rounded-full border-2 border-orange-400 object-cover shadow-md">
+                                    {% else %}
+                                        <div class="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center border-2 border-orange-300 text-white font-bold">
+                                            {{ user.username|slice:":1"|upper }}
+                                        </div>
+                                    {% endif %}
+                                </button>
 
-            {% if user.groups.all.0.name == 'Organizer' %}
-                    <a href="{% url 'organizer-dashboard' %}" class="text-white hover:text-gray-200 font-medium">Dashboard</a>
-                    <a href="{% url 'categories' %}" class="text-white hover:text-gray-200 font-medium">Categories</a>
-                    <form method="post" action="{% url 'logout' %}">
-                      {% csrf_token %}
-                      <button type="submit"
-                              class="text-white hover:text-gray-800 font-medium">
-                        Logout
-                      </button>
-                    </form>
-            {% endif %}
+                                <div id="userDropdown" class="hidden absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl py-2 border border-gray-100 ring-1 ring-black ring-opacity-5 z-50">
+                                    
+                                    
+                                    <a href="{% url 'profile' %}" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition">
+                                         My Profile
+                                    </a>
+                                    
+                                    {% if user.is_superuser or user.is_staff %}
+                                        <a href="{% url 'admin-dashboard' %}" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition">
+                                             Admin Dashboard
+                                        </a>
+                                    {% elif user.groups.all.0.name == 'Organizer' %}
+                                        <a href="{% url 'organizer-dashboard' %}" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition">
+                                             Organizer Dashboard
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'participant-dashboard' %}" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition">
+                                             My RSVPs
+                                        </a>
+                                    {% endif %}
 
-            {% if user.groups.all.0.name == 'User' %}
-                   <a href="{% url 'participant-dashboard' %}" class="text-white hover:text-gray-200 font-medium">My RSVPs</a>
-                   <form method="post" action="{% url 'logout' %}">
-                     {% csrf_token %}
-                     <button type="submit"
-                             class="text-white hover:text-gray-800 font-medium">
-                       Logout
-                     </button>
-                   </form>
-            {% endif %}
-
-            <span class="text-white font-bold mr-4">Welcome , {{user.first_name}}</span>
-
-            {% else %}
-                <a href="{% url 'sign-in' %}" class="text-white hover:text-gray-700 font-medium">Login</a>
-                <a href="{% url 'sign-up' %}" class="text-white hover:text-gray-700 font-medium bg-orange-400 px-4 py-2 rounded-lg transition hover:bg-orange-500">Sign Up</a>
-                
-            {% endif %}
-            
-                         </div>
+                                    <div class="my-1 border-t border-gray-100"></div>
+                                    
+                                    <form action="{% url 'logout' %}" method="POST" class="block w-full">
+                                        {% csrf_token %}
+                                        <button type="submit" class="w-full text-left flex items-center px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 font-bold transition">
+                                             Logout
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    {% else %}
+                        <div class="flex items-center space-x-4">
+                            <a href="{% url 'sign-in' %}" class="text-white hover:text-orange-200 font-medium">Login</a>
+                            <a href="{% url 'sign-up' %}" class="bg-orange-500 text-white px-5 py-2 rounded-xl font-bold transition hover:bg-orange-400 shadow-md">
+                                Sign Up
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </nav>
 
     <main class="flex-grow">
         {% block content %}
-        
         {% endblock content %}
     </main>
 
-    <footer class="bg-gray-900 text-gray-400 py-12 px-6">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
-            <p>&copy; 2026 EventMaster. Built for Assignment-2.</p>
-            <div class="flex space-x-6 mt-6 md:mt-0">
+    <footer class="bg-gray-900 text-gray-400 py-12">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-6 md:mb-0 text-center md:text-left">
+                <h3 class="text-white font-bold text-lg mb-2">EventMaster</h3>
+                <p class="text-sm">&copy; 2026 EventMaster. Built for Mid-exam</p>
+            </div>
+            <div class="flex space-x-8 text-sm">
                 <a href="#" class="hover:text-white transition">Privacy Policy</a>
                 <a href="#" class="hover:text-white transition">Terms of Service</a>
                 <a href="#" class="hover:text-white transition">Contact Us</a>
@@ -88,5 +106,34 @@
         </div>
     </footer>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuButton = document.getElementById('userMenuButton');
+            const dropdown = document.getElementById('userDropdown');
+
+            if (menuButton && dropdown) {
+                // Toggle dropdown on button click
+                menuButton.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    dropdown.classList.toggle('hidden');
+                });
+
+                // Close dropdown when clicking outside of it
+                document.addEventListener('click', function(event) {
+                    const isClickInside = menuButton.contains(event.target) || dropdown.contains(event.target);
+                    if (!isClickInside) {
+                        dropdown.classList.add('hidden');
+                    }
+                });
+
+                // Optional: Close on Escape key
+                document.addEventListener('keydown', function(event) {
+                    if (event.key === 'Escape') {
+                        dropdown.classList.add('hidden');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

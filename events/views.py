@@ -8,10 +8,13 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.mail import send_mail
 from django.conf import settings
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView,DeleteView,TemplateView,UpdateView
 from django.urls import reverse_lazy
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 def is_organizer(user):
