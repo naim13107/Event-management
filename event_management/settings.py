@@ -197,7 +197,7 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 
-FRONTEND_URL = 'http://127.0.0.1:8000'
+FRONTEND_URL = 'https://eventmanagement-pink.vercel.app/'
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = 'sign-in'
