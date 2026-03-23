@@ -36,16 +36,16 @@ CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com','http://127.0.0.1:8000']
 # Application definition
 
 INSTALLED_APPS = [
+    'cloudinary_storage',  
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles', 
     'cloudinary',
     'events',
-    "debug_toolbar",
+    'debug_toolbar',
     'users',
     'core',
 ]
